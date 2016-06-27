@@ -1,0 +1,54 @@
+#!/bin/sh
+# Script to startup the first run setup gui 
+
+# Source our functions
+. /usr/local/share/trueos/scripts/functions.sh
+
+# Check if we need to save an existing .xinitrc file
+if [ -e "/root/.xinitrc" ] ; then
+ mv /root/.xinitrc /root/.xinitrc.xbak
+fi
+
+# Check if we need to move the .fluxbox profile
+if [ -e "/root/.fluxbox" ] ; then
+  rm -rf /root/.fluxbox.xbak 2>/dev/null
+  mv /root/.fluxbox /root/.fluxbox.xbak 2>/dev/null
+fi
+
+# Copy the default fluxbox init files
+cp -R /usr/local/share/trueos/fluxboxinit /root/.fluxbox
+
+# Make sure we use files in /root
+HOME="/root"
+export HOME
+
+# Create the .xinitrc file
+echo '
+
+# Source our functions
+. /usr/local/share/trueos/scripts/functions.sh
+
+# Start fluxbox
+/usr/local/bin/startfluxbox &
+PID=$!
+
+# Run the firstboot wizard in functions.sh
+run_firstboot
+
+kill -9 ${PID}' > /root/.xinitrc
+chmod 755 /root/.xinitrc
+startx
+
+
+# Put back our saved files
+rm /root/.xinitrc >/dev/null 2>/dev/null
+# Check if we need to save an existing .xinitrc file
+if [ -e "/root/.xinitrc.xbak" ] ; then
+   mv /root/.xinitrc.xbak /etc/.xinitrc
+fi
+
+# Check if we need to move the .fluxbox profile
+if [ -e "/root/.fluxbox.xbak" ] ; then
+  rm -rf /root/.fluxbox >/dev/null 2>/dev/null
+  mv /root/.fluxbox.xbak /root/.fluxbox
+fi

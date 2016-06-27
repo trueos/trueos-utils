@@ -1,0 +1,83 @@
+#!/bin/sh
+
+########## Memory related info ##################################
+VM_PAGESIZE=`sysctl -n vm.stats.vm.v_page_size`
+FREE_MEM=$((`sysctl -n vm.stats.vm.v_free_count` * $VM_PAGESIZE))
+INACT_MEM=$((`sysctl -n vm.stats.vm.v_inactive_count` * $VM_PAGESIZE))
+CACHE_MEM=$((`sysctl -n vm.stats.vm.v_cache_count` * $VM_PAGESIZE))
+
+AVAIL_MEMORY=$((`sysctl -n hw.realmem` /1024/1024))
+FREE_MEMORY=$((($FREE_MEM + $INACT_MEM + $CACHE_MEM) /1024 /1024))
+
+#############3 System type TrueOS #################3
+if [ -e "/etc/defaults/trueos-desktop" ] ; then
+  SYSTYPE="DESKTOP"
+else
+  SYSTYPE="SERVER"
+fi
+
+display_trueos_banner()
+{
+echo "  ______                   ____  _____"
+echo " /_  __/______  _____     / __ \/ ___/ "
+echo "  / / / ___/ / / / _ \   / / / /\__ \ "
+echo " / / / /  / /_/ /  __/  / /_/ /___/ / "
+echo "/_/ /_/   \__,_/\___/   \____//____/  "
+echo ""                                      
+}
+
+display_pkg_version()
+{
+  VER=`pkg query %v $2`
+
+  if [ "$VER" != "" ] ; then
+    echo "${1}${VER}"
+  fi
+}
+
+display_trueos_banner 
+
+echo "General info:"
+echo "       Host:...............`hostname`"
+echo "       User:...............`whoami`"
+echo "       Uptime:.............`uptime | awk '{sub(/^.* up +/,"");sub(/, *[0-9]+ users.*/,"");print}'`"
+echo "       FreeBSD kernel ver:.`uname -r`"
+echo "       FreeBSD world ver:..`freebsd-version`"
+echo "       TrueOS ver:.........`cat /usr/local/share/trueos/version`"
+echo "       Arch:...............`uname -m`"
+echo "       Kernel ident:.......`uname -i`"
+echo "       CPU:................`sysctl -n hw.model`"
+echo "       CPU cores:..........`sysctl -n kern.smp.cpus`"
+echo "       Memory (free/avail):${FREE_MEMORY} / ${AVAIL_MEMORY} Mb"
+echo "       Package set:........`cat /usr/local/etc/trueos.conf 2>/dev/null | grep 'PACKAGE_SET: ' | sed 's|PACKAGE_SET: ||g'`"
+if [ "$SYSTYPE" = "DESKTOP" ]; then 
+echo "       Desktop environment:`de-info | grep "DE name" | sed "s/DE name: //"`"
+echo "       X11 Driver:.........`awk '{if (sub(/^.*Loading.*modules\/drivers\//,"")) { print; } }'  < /var/log/Xorg.0.log`"
+fi
+echo ""
+echo "Network IPV4 address: "
+ifconfig | grep "inet " |  awk '{ print "       "$2 }'
+##echo " ==> Network ipv6 ip: "
+##ifconfig | grep "inet6" |  awk '{ print $2 }'
+
+if [ "$SYSTYPE" = "DESKTOP" ]; then 
+echo ""
+echo "Installed desktop environments:"
+display_pkg_version "       KDE apps:....." "kde-baseapps"
+display_pkg_version "       KDE plasma:..." "kde-workspace"
+display_pkg_version "       Gnome:........" "gnome3"
+display_pkg_version "       Cinnamon:....." "cinnamon"
+display_pkg_version "       MATE:........." "mate-base"
+display_pkg_version "       LXDE:........." "lxde-meta"
+display_pkg_version "       XFCE:........." "xfce"
+display_pkg_version "       e17:.........." "enlightenment"
+display_pkg_version "       Awesome:......" "awesome"
+display_pkg_version "       FVWM:........." "fvwm2"
+display_pkg_version "       Lumina:......." "lumina"
+fi
+echo ""
+echo "System components:"
+display_pkg_version "       PC-BSD CLI:...r" "trueos-utils"
+display_pkg_version "       PC-BSD UI:....r" "trueos-utils-qt5"
+
+echo ""
