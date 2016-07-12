@@ -933,7 +933,7 @@ gen_pc-sysinstall_cfg()
 
    # Now the packages
    if [ "$SYSTYPE" = "desktop" ] ; then
-     echo "installPackages=misc/trueos-base x11/lumina www/firefox java/icedtea-web mail/thunderbird multimedia/vlc misc/trueos-meta-virtualbox editors/libreoffice archivers/unrar archivers/unzip editors/vim ${EXTRAPKGS} ${BLPKG}" >> ${CFGFILE}
+     echo "installPackages=misc/trueos-desktop x11/lumina ${EXTRAPKGS} ${BLPKG}" >> ${CFGFILE}
      echo "" >> ${CFGFILE}
      # Set our markers for desktop to run the first-time boot wizards
      echo "runCommand=touch /var/.runxsetup" >> ${CFGFILE}
@@ -942,7 +942,7 @@ gen_pc-sysinstall_cfg()
    else
      # TrueOS install
      if [ "$SYSTYPE" = "server" ] ; then
-       echo "installPackages=misc/trueos-base ${EXTRAPKGS} ${BLPKG}" >> ${CFGFILE}
+       echo "installPackages=misc/trueos-server ${EXTRAPKGS} ${BLPKG}" >> ${CFGFILE}
      fi
      echo "" >> ${CFGFILE}
      echo "" >> ${CFGFILE}
@@ -964,10 +964,6 @@ gen_pc-sysinstall_cfg()
    else
      echo "runCommand=sh /usr/local/share/trueos/scripts/sys-init.sh server" >> ${CFGFILE}
    fi
-
-   # Now add the freebsd dist files so iocage can create a template on first boot
-   echo 'runCommand=mkdir -p /usr/local/tmp/iocage-dist/' >> ${CFGFILE}
-   echo 'runExtCommand=cp /dist/*.txz ${FSMNT}/usr/local/tmp/iocage-dist/' >> ${CFGFILE}
 
    # Last cleanup stuff
    echo "" >> ${CFGFILE}
