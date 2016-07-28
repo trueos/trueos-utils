@@ -851,7 +851,7 @@ gen_pc-sysinstall_cfg()
    echo "installInteractive=no" >>${CFGFILE}
    echo "installMode=fresh" >>${CFGFILE}
    if [ "$SYSTYPE" = "desktop" ] ; then
-     echo "installType=trueos" >>${CFGFILE}
+     echo "installType=TrueOS" >>${CFGFILE}
    else
      echo "installType=FreeBSD" >>${CFGFILE}
    fi
