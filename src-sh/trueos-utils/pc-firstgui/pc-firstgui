@@ -24,10 +24,16 @@ export HOME
 
 # Wait a few, takes some time for i915kms to init and other boot
 # stuff to wrap up
-sleep 15
+export TERM="cons25"
+
+clear > /dev/console
+echo "Preparing to run TrueOS first-time setup wizard..." >/dev/console
+sleep 8
 
 # Create the .xinitrc file
 echo '
+
+touch /tmp/.xfirstrunstarted
 
 # Source our functions
 . /usr/local/share/trueos/scripts/functions.sh
@@ -42,6 +48,11 @@ run_firstboot
 kill -9 ${PID}' > /root/.xinitrc
 chmod 755 /root/.xinitrc
 startx
+
+if [ ! -e "/tmp/.xfirstrunstarted" ] ; then
+  sleep 10
+  startx
+fi
 
 
 # Put back our saved files
