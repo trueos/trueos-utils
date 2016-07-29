@@ -22,6 +22,10 @@ cp -R /usr/local/share/trueos/fluxboxinit /root/.fluxbox
 HOME="/root"
 export HOME
 
+# Wait a few, takes some time for i915kms to init and other boot
+# stuff to wrap up
+sleep 15
+
 # Create the .xinitrc file
 echo '
 
