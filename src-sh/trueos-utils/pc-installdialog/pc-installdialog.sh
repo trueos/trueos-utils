@@ -933,6 +933,11 @@ gen_pc-sysinstall_cfg()
 
    # Now the packages
    if [ "$SYSTYPE" = "desktop" ] ; then
+     EXTRAPKGS="${EXTRAPKGS} x11/lumina-i18n www/qupzilla-qt5 mail/trojita multimedia/vlc"
+     EXTRAPKGS="${EXTRAPKGS} multimedia/openh264 x11-fonts/noto-lite x11-fonts/droid-fonts-ttf"
+     EXTRAPKGS="${EXTRAPKGS} x11-themes/cursor-jimmac-theme graphics/phototonic"
+     EXTRAPKGS="${EXTRAPKGS} misc/trueos-meta-hunspell x11/qterminal print/cups-pdf"
+     EXTRAPKGS="${EXTRAPKGS} print/gutenprint-cups"
      echo "installPackages=misc/trueos-desktop x11/lumina ${EXTRAPKGS} ${BLPKG}" >> ${CFGFILE}
      echo "" >> ${CFGFILE}
      # Set our markers for desktop to run the first-time boot wizards
