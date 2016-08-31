@@ -938,7 +938,7 @@ gen_pc-sysinstall_cfg()
      EXTRAPKGS="${EXTRAPKGS} x11-themes/cursor-jimmac-theme graphics/phototonic"
      EXTRAPKGS="${EXTRAPKGS} misc/trueos-meta-hunspell x11/qterminal print/cups-pdf"
      EXTRAPKGS="${EXTRAPKGS} print/gutenprint-cups"
-     echo "installPackages=misc/trueos-desktop x11/lumina ${EXTRAPKGS} ${BLPKG}" >> ${CFGFILE}
+     echo "installPackages=sysutils/sysadm sysutils/sysadm-client misc/trueos-desktop x11/lumina ${EXTRAPKGS} ${BLPKG}" >> ${CFGFILE}
      echo "" >> ${CFGFILE}
      # Set our markers for desktop to run the first-time boot wizards
      echo "runCommand=touch /var/.runxsetup" >> ${CFGFILE}
