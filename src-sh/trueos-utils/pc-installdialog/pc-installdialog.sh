@@ -39,7 +39,7 @@ get_zpool_menu()
 {
   while :
   do
-    dOpts="done \"Exit zpool menu\" single \"Convert to single-disk\""
+    dOpts="done \"Exit storage pool menu\" single \"Convert to single-disk\""
 
     diskTot=`${PCSYS} disk-list | wc -l | awk '{print $1}'`
     if [ $diskTot -gt 1 ] ; then
@@ -52,7 +52,7 @@ get_zpool_menu()
       dOpts="$dOpts raidz3 \"Convert to raidz3\""
     fi
 
-    get_dlg_ans "--menu \"Current zpool: $ZPOOL_TYPE - $SYSDISK $ZPOOL_DISKS\" 20 50 10 ${dOpts}"
+    get_dlg_ans "--menu \"Current storage pool: $ZPOOL_TYPE - $SYSDISK $ZPOOL_DISKS\" 20 50 10 ${dOpts}"
     if [ -z "$ANS" ] ; then
        exit_err "Invalid option selected!"
     fi
@@ -1021,7 +1021,7 @@ start_edit_menu_loop()
 
   while :
   do
-    dialog --title "TrueOS Text Install - Edit Menu" --menu "Please select from the following options:" 18 40 10 disk "Change disk ($SYSDISK)" zpool "Change zpool settings" zfs "Change ZFS layout" network "Change networking" view "View install script" edit "Edit install script" back "Back to main menu" 2>/tmp/answer
+    dialog --title "TrueOS Text Install - Edit Menu" --menu "Please select from the following options:" 18 70 10 disk "Change disk ($SYSDISK)" pool "ZFS storage pool settings" datasets "ZFS datasets" network "Change networking" view "View install script" edit "Edit install script" back "Back to main menu" 2>/tmp/answer
     if [ $? -ne 0 ] ; then break ; fi
 
     ANS="`cat /tmp/answer`"
@@ -1029,11 +1029,11 @@ start_edit_menu_loop()
     case $ANS in
        disk) change_disk_selection
              ;;
+       pool) change_zpool
+	     ;;
+   datasets) change_zfs
+	     ;;
     network) change_networking 
-	     ;;
-        zfs) change_zfs
-	     ;;
-      zpool) change_zpool
 	     ;;
        view) more ${CFGFILE}
              rtn
