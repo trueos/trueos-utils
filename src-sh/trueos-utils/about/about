@@ -49,10 +49,10 @@ echo "       Kernel ident:.......`uname -i`"
 echo "       CPU:................`sysctl -n hw.model`"
 echo "       CPU cores:..........`sysctl -n kern.smp.cpus`"
 echo "       Memory (free/avail):${FREE_MEMORY} / ${AVAIL_MEMORY} Mb"
-echo "       Package set:........`cat /usr/local/etc/trueos.conf 2>/dev/null | grep 'PACKAGE_SET: ' | sed 's|PACKAGE_SET: ||g'`"
+echo "       Package set:........`cat /usr/local/etc/trueos.conf 2>/dev/null | grep '^[[:space:]]*PACKAGE_SET: ' | sed 's|[[:space:]]*PACKAGE_SET: ||g'`"
 if [ "$SYSTYPE" = "DESKTOP" ]; then 
-echo "       Desktop environment:`de-info | grep "DE name" | sed "s/DE name: //"`"
-echo "       X11 Driver:.........`awk '{if (sub(/^.*Loading.*modules\/drivers\//,"")) { print; } }'  < /var/log/Xorg.0.log`"
+echo "       Desktop environment:`sed -n 2p /var/db/pcdm/lastlogin`"
+echo "       X11 Driver:.........`awk '{if (sub(/^.*Loading.*modules\/drivers\//,"")) { printf "%s ",$0 } }END{print "";}'  < /var/log/Xorg.0.log`"
 fi
 echo ""
 echo "Network IPV4 address: "
