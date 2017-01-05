@@ -10,27 +10,23 @@ AVAIL_MEMORY=$((`sysctl -n hw.realmem` /1024/1024))
 FREE_MEMORY=$((($FREE_MEM + $INACT_MEM) /1024 /1024))
 
 #############3 System type TrueOS #################3
+display_trueos_version()
+{
 if [ -e "/etc/defaults/trueos-desktop" ] ; then
   SYSTYPE="DESKTOP"
-  display_pkg_version()
-  {
     VER=`pkg query %v trueos-desktop`
-
     if [ "$VER" != "" ] ; then
-    echo "${1}${VER}"
+    echo "TrueOS-${SYSTYPE}-${1}${VER}"
   fi
-}
 else
+echo "Server"
   SYSTYPE="SERVER"
-  display_pkg_version()
-{
   VER=`pkg query %v trueos-server`
-
   if [ "$VER" != "" ] ; then
     echo "${1}${VER}"
   fi
-}
 fi
+}
 
 display_trueos_banner()
 {
@@ -62,7 +58,7 @@ echo "       User:...............`whoami`"
 echo "       Uptime:.............`uptime | awk '{sub(/^.* up +/,"");sub(/, *[0-9]+ users.*/,"");print}'`"
 echo "       FreeBSD kernel ver:.`uname -r`"
 echo "       FreeBSD world ver:..`freebsd-version`"
-echo "       TrueOS ver:.........`cat /usr/local/share/trueos/version`"
+echo "       TrueOS ver:.........`display_trueos_version`"
 echo "       Arch:...............`uname -m`"
 echo "       Kernel ident:.......`uname -i`"
 echo "       CPU:................`sysctl -n hw.model`"
