@@ -4,16 +4,32 @@
 VM_PAGESIZE=`sysctl -n vm.stats.vm.v_page_size`
 FREE_MEM=$((`sysctl -n vm.stats.vm.v_free_count` * $VM_PAGESIZE))
 INACT_MEM=$((`sysctl -n vm.stats.vm.v_inactive_count` * $VM_PAGESIZE))
-CACHE_MEM=$((`sysctl -n vm.stats.vm.v_cache_count` * $VM_PAGESIZE))
+#CACHE_MEM=$((`sysctl -n vm.stats.vm.v_cache_count` * $VM_PAGESIZE))
 
 AVAIL_MEMORY=$((`sysctl -n hw.realmem` /1024/1024))
-FREE_MEMORY=$((($FREE_MEM + $INACT_MEM + $CACHE_MEM) /1024 /1024))
+FREE_MEMORY=$((($FREE_MEM + $INACT_MEM) /1024 /1024))
 
 #############3 System type TrueOS #################3
 if [ -e "/etc/defaults/trueos-desktop" ] ; then
   SYSTYPE="DESKTOP"
+  display_pkg_version()
+  {
+    VER=`pkg query %v trueos-desktop`
+
+    if [ "$VER" != "" ] ; then
+    echo "${1}${VER}"
+  fi
+}
 else
   SYSTYPE="SERVER"
+  display_pkg_version()
+{
+  VER=`pkg query %v trueos-server`
+
+  if [ "$VER" != "" ] ; then
+    echo "${1}${VER}"
+  fi
+}
 fi
 
 display_trueos_banner()
@@ -26,6 +42,7 @@ echo "/_/ /_/   \__,_/\___/   \____//____/  "
 echo ""                                      
 }
 
+# Display pkg info for Desktop
 display_pkg_version()
 {
   VER=`pkg query %v $2`
@@ -34,6 +51,8 @@ display_pkg_version()
     echo "${1}${VER}"
   fi
 }
+
+# Display pkg_info
 
 display_trueos_banner 
 
