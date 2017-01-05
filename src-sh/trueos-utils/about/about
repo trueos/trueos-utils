@@ -96,7 +96,7 @@ display_pkg_version "       Lumina:......." "lumina"
 fi
 echo ""
 echo "System components:"
-display_pkg_version "       PC-BSD CLI:...r" "trueos-utils"
-display_pkg_version "       PC-BSD UI:....r" "trueos-utils-qt5"
+display_pkg_version "       TrueOS CLI:...r" "trueos-utils"
+display_pkg_version "       TrueOS UI:....r" "trueos-utils-qt5"
 
 echo ""
