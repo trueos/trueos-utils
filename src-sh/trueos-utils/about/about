@@ -96,3 +96,18 @@ display_pkg_version "       TrueOS CLI:...r" "trueos-utils"
 display_pkg_version "       TrueOS UI:....r" "trueos-utils-qt5"
 
 echo ""
+echo "Graphics HW information:"
+echo "       "`glxinfo | grep "direct rendering"`
+echo "       "`glxinfo | grep 'OpenGL renderer string'`
+
+echo ""
+echo "Sound HW information:"
+echo "       "`cat /dev/sndstat | grep default`
+
+echo ""
+echo "Wireless HW information:"
+echo "       "`sysctl -b net.wlan.devices`
+
+echo ""
+echo "Storage information:"
+gpart show
