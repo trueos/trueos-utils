@@ -28,6 +28,22 @@ echo "Server"
 fi
 }
 
+EFICHECK=`dmesg | grep "(efifb)" | awk '{print $1}' | cut -d '(' -f 2 | cut -d ')' -f 1`
+
+# Check to see if BIOS/EFI is used as the bootloader type
+if [ $EFICHECK = "efifb"  ] ; then
+    export LOADERTYPE=EFI
+  else
+    export LOADERTYPE=BIOS
+fi
+
+# Check to see if Grub is used as the bootloader
+if [ -f /etc/grub/grub.cfg ] ; then
+    export BOOTLOADER=GRUB
+  else
+    export BOOTLOADER=BSD
+fi
+
 display_trueos_banner()
 {
 echo "  ______                   ____  _____"
@@ -63,6 +79,8 @@ echo "       FreeBSD git rev:....`uname -a | awk '{print $7}' | cut -d '(' -f 1`
 echo "       TrueOS ver:.........`display_trueos_version`"
 echo "       Arch:...............`uname -m`"
 echo "       Kernel ident:.......`uname -i`"
+echo "       Bootloader:.........`echo $BOOTLOADER`"
+echo "       Bootloader type:....`echo $LOADERTYPE`"
 echo "       CPU:................`sysctl -n hw.model`"
 echo "       CPU cores:..........`sysctl -n kern.smp.cpus`"
 echo "       Memory (free/avail):${FREE_MEMORY} / ${AVAIL_MEMORY} Mb"
