@@ -108,7 +108,7 @@ echo "Network IPV4 address: "
 ifconfig | grep "inet " |  awk '{ print "       "$2 }'
 echo ""
 echo "Network IPv6 address: "
-ifconfig | grep "inet6" |  awk '{ print "	"$2 }'
+ifconfig | grep "inet6" |  awk '{ print "       "$2 }'
 }
 
 show_usage()
