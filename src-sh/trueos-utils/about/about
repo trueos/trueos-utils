@@ -14,14 +14,11 @@ FREE_MEMORY=$((($FREE_MEM + $INACT_MEM) /1024 /1024))
 display_trueos_version()
 {
 if [ -e "/etc/defaults/trueos-desktop" ] ; then
-  SYSTYPE="DESKTOP"
-    VER=`pkg query %v trueos-desktop`
+  VER=`pkg query %v trueos-desktop`
     if [ "$VER" != "" ] ; then
     echo "TrueOS-Desktop-${1}${VER}"
   fi
 else
-echo "Server"
-  SYSTYPE="SERVER"
   VER=`pkg query %v trueos-server`
   if [ "$VER" != "" ] ; then
     echo "TrueOS-Server-${1}${VER}"
@@ -32,17 +29,8 @@ fi
 # Check TrueOS type again for other functions
 if [ -e "/etc/defaults/trueos-desktop" ] ; then
   SYSTYPE="DESKTOP"
-    VER=`pkg query %v trueos-desktop`
-    if [ "$VER" != "" ] ; then
-    echo "TrueOS-${SYSTYPE}-${1}${VER}"
-  fi
 else
-echo "Server"
   SYSTYPE="SERVER"
-  VER=`pkg query %v trueos-server`
-  if [ "$VER" != "" ] ; then
-    echo "${1}${VER}"
-  fi
 fi
 
 EFICHECK=`dmesg | grep "(efifb)" | awk '{print $1}' | cut -d '(' -f 2 | cut -d ')' -f 1`
