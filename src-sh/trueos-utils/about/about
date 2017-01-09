@@ -10,8 +10,26 @@ AVAIL_MEMORY=$((`sysctl -n hw.realmem` /1024/1024))
 FREE_MEMORY=$((($FREE_MEM + $INACT_MEM) /1024 /1024))
 
 #############3 System type TrueOS #################3
+# Special function for checking TrueOS version
 display_trueos_version()
 {
+if [ -e "/etc/defaults/trueos-desktop" ] ; then
+  SYSTYPE="DESKTOP"
+    VER=`pkg query %v trueos-desktop`
+    if [ "$VER" != "" ] ; then
+    echo "TrueOS-Desktop-${1}${VER}"
+  fi
+else
+echo "Server"
+  SYSTYPE="SERVER"
+  VER=`pkg query %v trueos-server`
+  if [ "$VER" != "" ] ; then
+    echo "TrueOS-Server-${1}${VER}"
+  fi
+fi
+}
+
+# Check TrueOS type again for other functions
 if [ -e "/etc/defaults/trueos-desktop" ] ; then
   SYSTYPE="DESKTOP"
     VER=`pkg query %v trueos-desktop`
@@ -26,7 +44,6 @@ echo "Server"
     echo "${1}${VER}"
   fi
 fi
-}
 
 EFICHECK=`dmesg | grep "(efifb)" | awk '{print $1}' | cut -d '(' -f 2 | cut -d ')' -f 1`
 
@@ -85,25 +102,28 @@ echo "       CPU:................`sysctl -n hw.model`"
 echo "       CPU cores:..........`sysctl -n kern.smp.cpus`"
 echo "       Memory (free/avail):${FREE_MEMORY} / ${AVAIL_MEMORY} Mb"
 echo "       Package set:........`cat /usr/local/etc/trueos.conf 2>/dev/null | grep '^[[:space:]]*PACKAGE_SET: ' | sed 's|[[:space:]]*PACKAGE_SET: ||g'`"
+
 if [ "$SYSTYPE" = "DESKTOP" ]; then 
-echo "       Desktop environment:`sed -n 2p /var/db/pcdm/lastlogin`"
-echo "       X11 Driver:.........`awk '{if (sub(/^.*Loading.*modules\/drivers\//,"")) { printf "%s ",$0 } }END{print "";}'  < /var/log/Xorg.0.log`"
+  echo "       Desktop environment:`sed -n 2p /var/db/pcdm/lastlogin`"
+  echo "       X11 Driver:.........`awk '{if (sub(/^.*Loading.*modules\/drivers\//,"")) { printf "%s ",$0 } }END{print "";}'  < /var/log/Xorg.0.log`"
+
+  echo ""
+  echo "Graphics HW information:"
+  echo "       "`glxinfo | grep "direct rendering"`
+  echo "       "`glxinfo | grep 'OpenGL renderer string'`
+
+  echo ""
+  echo "Sound HW information:"
+  echo "       "`cat /dev/sndstat | grep default`
+
+  echo ""
+  echo "Wireless HW information:"
+  echo "       "`sysctl -b net.wlan.devices`
 fi
+
 echo ""
 echo "Network IPV4 address: "
 ifconfig | grep "inet " |  awk '{ print "       "$2 }'
-##echo " ==> Network ipv6 ip: "
-##ifconfig | grep "inet6" |  awk '{ print $2 }'
-
 echo ""
-echo "Graphics HW information:"
-echo "       "`glxinfo | grep "direct rendering"`
-echo "       "`glxinfo | grep 'OpenGL renderer string'`
-
-echo ""
-echo "Sound HW information:"
-echo "       "`cat /dev/sndstat | grep default`
-
-echo ""
-echo "Wireless HW information:"
-echo "       "`sysctl -b net.wlan.devices`
+echo "Network IPv6 address: "
+ifconfig | grep "inet6" |  awk '{ print "	"$2 }'
