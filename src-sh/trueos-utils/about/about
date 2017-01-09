@@ -58,6 +58,8 @@ echo "       User:...............`whoami`"
 echo "       Uptime:.............`uptime | awk '{sub(/^.* up +/,"");sub(/, *[0-9]+ users.*/,"");print}'`"
 echo "       FreeBSD kernel ver:.`uname -r`"
 echo "       FreeBSD world ver:..`freebsd-version`"
+echo "       FreeBSD git branch:.`uname -a | awk '{print $7}' | cut -d '(' -f 2 | cut -d ')' -f1`"
+echo "       FreeBSD git rev:....`uname -a | awk '{print $7}' | cut -d '(' -f 1`"
 echo "       TrueOS ver:.........`display_trueos_version`"
 echo "       Arch:...............`uname -m`"
 echo "       Kernel ident:.......`uname -i`"
@@ -75,26 +77,6 @@ ifconfig | grep "inet " |  awk '{ print "       "$2 }'
 ##echo " ==> Network ipv6 ip: "
 ##ifconfig | grep "inet6" |  awk '{ print $2 }'
 
-if [ "$SYSTYPE" = "DESKTOP" ]; then 
-echo ""
-echo "Installed desktop environments:"
-display_pkg_version "       KDE apps:....." "kde-baseapps"
-display_pkg_version "       KDE plasma:..." "kde-workspace"
-display_pkg_version "       Gnome:........" "gnome3"
-display_pkg_version "       Cinnamon:....." "cinnamon"
-display_pkg_version "       MATE:........." "mate-base"
-display_pkg_version "       LXDE:........." "lxde-meta"
-display_pkg_version "       XFCE:........." "xfce"
-display_pkg_version "       e17:.........." "enlightenment"
-display_pkg_version "       Awesome:......" "awesome"
-display_pkg_version "       FVWM:........." "fvwm2"
-display_pkg_version "       Lumina:......." "lumina"
-fi
-echo ""
-echo "System components:"
-display_pkg_version "       TrueOS CLI:...r" "trueos-utils"
-display_pkg_version "       TrueOS UI:....r" "trueos-utils-qt5"
-
 echo ""
 echo "Graphics HW information:"
 echo "       "`glxinfo | grep "direct rendering"`
@@ -107,7 +89,3 @@ echo "       "`cat /dev/sndstat | grep default`
 echo ""
 echo "Wireless HW information:"
 echo "       "`sysctl -b net.wlan.devices`
-
-echo ""
-echo "Storage information:"
-gpart show
