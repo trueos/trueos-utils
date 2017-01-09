@@ -73,6 +73,8 @@ display_pkg_version()
 
 display_trueos_banner 
 
+show_general()
+{
 echo "General info:"
 echo "       Host:...............`hostname`"
 echo "       User:...............`whoami`"
@@ -94,24 +96,42 @@ echo "       Package set:........`cat /usr/local/etc/trueos.conf 2>/dev/null | g
 if [ "$SYSTYPE" = "DESKTOP" ]; then 
   echo "       Desktop environment:`sed -n 2p /var/db/pcdm/lastlogin`"
   echo "       X11 Driver:.........`awk '{if (sub(/^.*Loading.*modules\/drivers\//,"")) { printf "%s ",$0 } }END{print "";}'  < /var/log/Xorg.0.log`"
-
-  echo ""
-  echo "Graphics HW information:"
-  echo "       "`glxinfo | grep "direct rendering"`
-  echo "       "`glxinfo | grep 'OpenGL renderer string'`
-
-  echo ""
-  echo "Sound HW information:"
-  echo "       "`cat /dev/sndstat | grep default`
-
-  echo ""
-  echo "Wireless HW information:"
-  echo "       "`sysctl -b net.wlan.devices`
+  echo "       OSS Driver:.........`cat /dev/sndstat | grep default`"
+  echo "       WIFI Driver:........`sysctl -b net.wlan.devices`"
 fi
+}
 
+show_network()
+{
 echo ""
 echo "Network IPV4 address: "
 ifconfig | grep "inet " |  awk '{ print "       "$2 }'
 echo ""
 echo "Network IPv6 address: "
 ifconfig | grep "inet6" |  awk '{ print "	"$2 }'
+}
+
+show_usage()
+{
+echo "-n show network information"
+echo "-v show all information"
+}
+
+# Check for arguments
+if [ -z $1 ] ; then
+  show_general
+  exit 0
+fi
+
+case $1 in
+        -n)
+	show_network
+        ;;
+	-v)
+	show_general
+	show_network
+	;;
+        *)
+	show_usage
+        ;;
+esac
