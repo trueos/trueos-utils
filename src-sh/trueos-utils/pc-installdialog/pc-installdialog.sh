@@ -956,6 +956,7 @@ gen_pc-sysinstall_cfg()
      echo "rootPass=${ROOTPW}" >> ${CFGFILE}
      echo "" >> ${CFGFILE}
      echo "userName=${USERNAME}" >> ${CFGFILE}
+     echo "userComment=${USERREALNAME}" >> ${CFGFILE}
      echo "userPass=${USERPW}" >> ${CFGFILE}
      echo "userShell=${USERSHELL}" >> ${CFGFILE}
      echo "userHome=/home/${USERNAME}" >> ${CFGFILE}
