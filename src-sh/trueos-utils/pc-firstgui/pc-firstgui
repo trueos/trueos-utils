@@ -47,11 +47,11 @@ run_firstboot
 
 kill -9 ${PID}' > /root/.xinitrc
 chmod 755 /root/.xinitrc
-startx
+startx -- :0 vt9
 
 if [ ! -e "/tmp/.xfirstrunstarted" ] ; then
   sleep 10
-  startx
+  startx -- :0 vt9
 fi
 
 
