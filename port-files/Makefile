@@ -12,7 +12,8 @@ LICENSE=	BSD2CLAUSE
 
 RUN_DEPENDS=    sipcalc:net-mgmt/sipcalc \
                 eject:sysutils/eject \
-                unzip:archivers/unzip
+                unzip:archivers/unzip \
+                tree:sysutils/tree
 
 WRKSRC_SUBDIR=  src-sh/trueos-utils
 USE_QT5=        core network buildtools qmake
