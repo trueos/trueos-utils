@@ -1,6 +1,7 @@
 #!/bin/sh
 
-########## Memory related info ##################################
+# memory-related
+
 VM_PAGESIZE=`sysctl -n vm.stats.vm.v_page_size`
 FREE_MEM=$((`sysctl -n vm.stats.vm.v_free_count` * $VM_PAGESIZE))
 INACT_MEM=$((`sysctl -n vm.stats.vm.v_inactive_count` * $VM_PAGESIZE))
@@ -9,8 +10,9 @@ INACT_MEM=$((`sysctl -n vm.stats.vm.v_inactive_count` * $VM_PAGESIZE))
 AVAIL_MEMORY=$((`sysctl -n hw.realmem` /1024/1024))
 FREE_MEMORY=$((($FREE_MEM + $INACT_MEM) /1024 /1024))
 
-#############3 System type TrueOS #################3
-# Special function for checking TrueOS version
+# system type TrueOS 
+# special function for checking the version
+
 display_trueos_version()
 {
 if [ -e "/etc/defaults/trueos-desktop" ] ; then
@@ -26,7 +28,8 @@ else
 fi
 }
 
-# Check TrueOS type again for other functions
+# check TrueOS type again for other functions
+
 if [ -e "/etc/defaults/trueos-desktop" ] ; then
   SYSTYPE="DESKTOP"
 else
@@ -35,31 +38,24 @@ fi
 
 EFICHECK=`dmesg | grep "(efifb)" | awk '{print $1}' | cut -d '(' -f 2 | cut -d ')' -f 1`
 
-# Check to see if BIOS/EFI is used as the bootloader type
-if [ $EFICHECK = "efifb"  ] ; then
+# check whether the type of the boot loader is BIOS or EFI
+
+if [ -n "$EFICHECK" ] ; then
     export LOADERTYPE=EFI
   else
     export LOADERTYPE=BIOS
 fi
 
-# Check to see if Grub is used as the bootloader
+# check whether GRUB is used
+
 if [ -f /etc/grub/grub.cfg ] ; then
     export BOOTLOADER=GRUB
   else
     export BOOTLOADER=BSD
 fi
 
-display_trueos_banner()
-{
-echo "  ______                   ____  _____"
-echo " /_  __/______  _____     / __ \/ ___/ "
-echo "  / / / ___/ / / / _ \   / / / /\__ \ "
-echo " / / / /  / /_/ /  __/  / /_/ /___/ / "
-echo "/_/ /_/   \__,_/\___/   \____//____/  "
-echo ""                                      
-}
+# display the version of pkg(8)
 
-# Display pkg info for Desktop
 display_pkg_version()
 {
   VER=`pkg query %v $2`
@@ -69,69 +65,144 @@ display_pkg_version()
   fi
 }
 
-# Display pkg_info
-
-display_trueos_banner 
+# display general information
+#
+# After SCFB is chosen, 'about' does not show use of SCFB
+# https://github.com/trueos/trueos-core/issues/316#event-946089647
 
 show_general()
 {
-echo "General info:"
-echo "       Host:...............`hostname`"
-echo "       User:...............`whoami`"
-echo "       Uptime:.............`uptime | awk '{sub(/^.* up +/,"");sub(/, *[0-9]+ users.*/,"");print}'`"
-echo "       FreeBSD kernel ver:.`uname -r`"
-echo "       FreeBSD world ver:..`freebsd-version`"
-echo "       FreeBSD git branch:.`uname -a | awk '{print $7}' | cut -d '(' -f 2 | cut -d ')' -f1`"
-echo "       FreeBSD git rev:....`uname -a | awk '{print $7}' | cut -d '(' -f 1`"
-echo "       TrueOS ver:.........`display_trueos_version`"
-echo "       Arch:...............`uname -m`"
-echo "       Kernel ident:.......`uname -i`"
-echo "       Bootloader:.........`echo $BOOTLOADER`"
-echo "       Bootloader type:....`echo $LOADERTYPE`"
-echo "       CPU:................`sysctl -n hw.model`"
-echo "       CPU cores:..........`sysctl -n kern.smp.cpus`"
-echo "       Memory (free/avail):${FREE_MEMORY} / ${AVAIL_MEMORY} Mb"
-echo "       Package set:........`cat /usr/local/etc/trueos.conf 2>/dev/null | grep '^[[:space:]]*PACKAGE_SET: ' | sed 's|[[:space:]]*PACKAGE_SET: ||g'`"
+echo ""
+echo "==================="
+echo "General information"
+echo "==================="
+echo ""
+echo "boot environment now (N) … `beadm list | grep " N" | awk '{print $1,$2,$5}'`"
+echo "       after restart (R) … `beadm list | grep "R " | awk '{print $1,$2,$5}'`"
+echo "boot loader …………………………………… `echo $BOOTLOADER`"
+echo "            type ……………………… `echo $LOADERTYPE`"
+echo "CPU ………………………………………………………… `sysctl -n hw.model`"
+echo "    number of cores ……………… `sysctl -n kern.smp.cpus`"
+echo "host ……………………………………………………… `hostname`"
+echo "memory ………………………………………………… ${AVAIL_MEMORY} MB available, ${FREE_MEMORY} MB free"
+echo "OS git branch ……………………………………………………………………………………… `uname -a | awk '{print $7}' | cut -d '(' -f 2 | cut -d ')' -f1`"
+echo "OS git revision ………………………………………………………………………………… `uname -a | awk '{print $7}' | cut -d '(' -f 1`"
+echo "OS kernel identity …………………………………………… (uname -i) `uname -i`"
+echo "OS platform (architecture) ……………………… (uname -m) `uname -m`"
+echo "OS release level ………………………………………………… (uname -r) `uname -r`"
+echo "OS version and patch level …… (freebsd-version) `freebsd-version`"
+echo "TrueOS package set ………………… `cat /usr/local/etc/trueos.conf 2>/dev/null | grep '^[[:space:]]*PACKAGE_SET: ' | sed 's|[[:space:]]*PACKAGE_SET: ||g'`"
+echo "TrueOS version …………………………… `display_trueos_version`"
+echo "uptime ………………………………………………… `uptime | awk '{sub(/^.* up +/,"");sub(/, *[0-9]+ users.*/,"");print}'`"
+echo "user  …………………………………………………… `whoami`"
 
-if [ "$SYSTYPE" = "DESKTOP" ]; then 
-  echo "       Desktop environment:`sed -n 2p /var/db/pcdm/lastlogin`"
-  echo "       X11 Driver:.........`awk '{if (sub(/^.*Loading.*modules\/drivers\//,"")) { printf "%s ",$0 } }END{print "";}'  < /var/log/Xorg.0.log`"
-  echo "       OSS Driver:.........`cat /dev/sndstat | grep default`"
-  echo "       WIFI Driver:........`sysctl -b net.wlan.devices`"
+if [ "$SYSTYPE" = "DESKTOP" ] ; then 
+  echo ""
+  echo "More (TrueOS Desktop):"
+  echo ""
+  echo "    desktop environment …… `sed -n 2p /var/db/pcdm/lastlogin`"
+  echo "    sound card driver ………… `cat /dev/sndstat | grep default`"
+  echo "    wireless driver ……………… `sysctl -b net.wlan.devices`"
+  echo "    X11 drivers ………………………… `awk '{if (sub(/^.*Loading.*modules\/drivers\//,"")) { printf "%s ",$0 } }END{print "";}'  < /var/log/Xorg.0.log`"
+  echo ""
 fi
 }
+
+# display networking information
 
 show_network()
 {
 echo ""
-echo "Network IPV4 address: "
-ifconfig | grep "inet " |  awk '{ print "       "$2 }'
+echo "=========="
+echo "Networking"
+echo "=========="
 echo ""
-echo "Network IPv6 address: "
-ifconfig | grep "inet6" |  awk '{ print "       "$2 }'
+echo "Default routing table"
+echo "---------------------"
+echo ""
+route show default
+echo ""
+echo "Routing table in numeric format"
+echo "-------------------------------"
+echo ""
+netstat -arn
+echo ""
+echo "Interface information, condensed"
+echo "--------------------------------"
+echo ""
+ifconfig | grep -v ether | grep -v bssid
+echo ""
+echo "DNS-related"
+echo "-----------"
+echo ""
+drill
+echo ""
+echo "----"
+echo ""
+echo "IPv4 key points (not interface specific): "
+echo ""
+ifconfig | grep "inet " |  awk '{ print "    "$2 }'
+echo ""
+echo "IPv6 key points (not interface-specific): "
+echo ""
+ifconfig | grep "inet6" |  awk '{ print "    "$2 }'
+echo ""
+}
+
+# banner
+# hung beneath (it's attractive, but space-consuming)
+
+show_trueos_banner()
+{
+echo "   ______                   ____  _____"
+echo "  /_  __/______  _____     / __ \/ ___/"
+echo "   / / / ___/ / / / _ \   / / / /\__ \ "
+echo "  / / / /  / /_/ /  __/  / /_/ /___/ / "
+echo " /_/ /_/   \__,_/\___/   \____//____/  "
+echo ""
+echo "                https://www.trueos.org/"
+echo ""
 }
 
 show_usage()
 {
-echo "-n show network information"
-echo "-v show all information"
+echo "-a show all information"
+echo "-n show network information only"
 }
 
-# Check for arguments
+# check for arguments
+
 if [ -z $1 ] ; then
-  show_general
-  exit 0
+	show_general
+# 	show_trueos_banner
+	exit 0
 fi
 
 case $1 in
-        -n)
+	-n)
 	show_network
+# 	show_trueos_banner
         ;;
-	-v)
+	-a)
 	show_general
 	show_network
+# 	show_trueos_banner
 	;;
         *)
 	show_usage
         ;;
 esac
+
+# a possible future set of arguments/flags/options 
+# https://discourse.trueos.org/t/-/411/35
+# 
+# -a all
+# -c compatibility
+# -g general (the default, if no option is specified)
+# -h hardware
+# -i interactive
+# -k kernel
+# -n networking
+# -r runlevels
+# -u updating
+# -v verbose
