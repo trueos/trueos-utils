@@ -29,6 +29,8 @@ fi
 # The current ZPOOL type should default to single
 ZPOOL_TYPE="single"
 
+SYSBOOTMANAGER="BSD"
+
 change_zpool()
 {
   get_zpool_menu
@@ -386,55 +388,6 @@ get_sys_type()
   fi
 }
 
-get_sys_bootmanager()
-{
-  # Ask the boot-manager
-  get_dlg_ans "--radiolist \"Boot Manager\" 12 50 5 BSD \"BSD - Recommended\" on GRUB \"GRUB\" off none \"No boot-loader\" off"
-  if [ -z "$ANS" ] ; then
-     exit_err "Invalid bootmanager type"
-  fi
-  SYSBOOTMANAGER="$ANS"
-
-  # If we are not using grub / gpt, nothing left to ask
-  if [ "$DISKFORMAT" = "MBR" ]; then return; fi
-
-  # If we are using GRUB, ask if we want to do GELI encryption
-  dialog --title "$TITLE" --yesno 'Enable full-disk encryption with GELI?' 8 30
-  if [ $? -ne 0 ] ; then return ; fi
-  get_dlg_ans "--passwordbox 'Enter encryption password' 8 40"
-
-  if [ -z "$ANS" ] ; then
-     echo "No password specified!  GELI encryption is currently disabled." >> /tmp/.GELIinfo.$$
-     echo "Please run the wizard again to setup GELI encryption!" >> /tmp/.GELIinfo.$$
-     USINGGELI="NO"
-     dialog --tailbox /tmp/.GELIinfo.$$ 10 80
-     rm /tmp/.GELIinfo.$$
-     return
-  fi
-     
-  GELIPASS="$ANS"
-  get_dlg_ans "--passwordbox 'Enter password (again)' 8 40"
-  if [ -z "$ANS" ] ; then
-     echo "No password specified!  GELI encryption is currently disabled." >> /tmp/.GELIinfo.$$
-     echo "Please run the wizard again to setup GELI encryption!" >> /tmp/.GELIinfo.$$
-     USINGGELI="NO"
-     dialog --tailbox /tmp/.GELIinfo.$$ 10 80
-     rm /tmp/.GELIinfo.$$
-     return
-  fi
-     
-  if [ "$GELIPASS" != "$ANS" ]; then
-     echo "ERROR: Password mismatch! GELI encryption is currently disabled." >> /tmp/.GELIinfo.$$
-     echo "Please run the wizard again to setup GELI encryption!" >> /tmp/.GELIinfo.$$
-     USINGGELI="NO"
-     dialog --tailbox /tmp/.GELIinfo.$$ 10 80
-     rm /tmp/.GELIinfo.$$
-     return
-  fi
-
-  USINGGELI="YES"
-
-}
 
 get_target_disk()
 {
@@ -925,12 +878,6 @@ gen_pc-sysinstall_cfg()
    echo "commitDiskLabel" >> ${CFGFILE}
    echo "" >> ${CFGFILE}
 
-   if [ "$SYSBOOTMANAGER" = "GRUB" ]; then
-     BLPKG="sysutils/grub2-trueos sysutils/grub2-efi"
-   else
-     BLPKG=""
-   fi
-
    # Now the packages
    if [ "$SYSTYPE" = "desktop" ] ; then
      EXTRAPKGS="${EXTRAPKGS} x11/lumina-i18n www/qupzilla-qt5 mail/trojita multimedia/vlc"
@@ -938,7 +885,7 @@ gen_pc-sysinstall_cfg()
      EXTRAPKGS="${EXTRAPKGS} x11-themes/cursor-jimmac-theme graphics/phototonic"
      EXTRAPKGS="${EXTRAPKGS} misc/trueos-meta-hunspell x11/qterminal print/cups-pdf"
      EXTRAPKGS="${EXTRAPKGS} print/gutenprint-cups"
-     echo "installPackages=misc/trueos-desktop x11/lumina ${EXTRAPKGS} ${BLPKG}" >> ${CFGFILE}
+     echo "installPackages=misc/trueos-desktop x11/lumina ${EXTRAPKGS}" >> ${CFGFILE}
      echo "" >> ${CFGFILE}
      # Set our markers for desktop to run the first-time boot wizards
      echo "runCommand=touch /var/.runxsetup" >> ${CFGFILE}
@@ -947,7 +894,7 @@ gen_pc-sysinstall_cfg()
    else
      # TrueOS install
      if [ "$SYSTYPE" = "server" ] ; then
-       echo "installPackages=misc/trueos-server ${EXTRAPKGS} ${BLPKG}" >> ${CFGFILE}
+       echo "installPackages=misc/trueos-server ${EXTRAPKGS}" >> ${CFGFILE}
      fi
      echo "" >> ${CFGFILE}
      echo "" >> ${CFGFILE}
@@ -985,7 +932,6 @@ gen_pc-sysinstall_cfg()
 change_disk_selection() {
   get_target_disk
   get_target_part
-  get_sys_bootmanager
   gen_pc-sysinstall_cfg
 }
 
@@ -995,7 +941,6 @@ start_full_wizard()
   get_sys_type
   get_target_disk
   get_target_part
-  get_sys_bootmanager
 
   # If doing a server setup, need to prompt for some more details
   if [ "$SYSTYPE" = "server" ] ; then
