@@ -87,6 +87,7 @@ echo "host ……………………………………………………… `host
 echo "memory ………………………………………………… ${AVAIL_MEMORY} MB available, ${FREE_MEMORY} MB free"
 echo "OS git branch ……………………………………………………………………………………… `uname -a | awk '{print $7}' | cut -d '(' -f 2 | cut -d ')' -f1`"
 echo "OS git revision ………………………………………………………………………………… `uname -a | awk '{print $7}' | cut -d '(' -f 1`"
+echo "OS kernel build time ………………………………………………………… `uname -a | awk '{print $8,$13,$9,$10,$11,$12}'`"
 echo "OS kernel identity …………………………………………… (uname -i) `uname -i`"
 echo "OS platform (architecture) ……………………… (uname -m) `uname -m`"
 echo "OS release level ………………………………………………… (uname -r) `uname -r`"
@@ -149,8 +150,20 @@ ifconfig | grep "inet6" |  awk '{ print "    "$2 }'
 echo ""
 }
 
+# markdown to simplify pastes to e.g. Discourse and gitter
+
+opening_markdown()
+{
+echo "\`\`\`text"
+}
+
+closing_markdown()
+{
+echo "\`\`\`"
+}
+
 # banner
-# hung beneath (it's attractive, but space-consuming)
+# may be hung beneath (it's attractive, but space-consuming)
 
 show_trueos_banner()
 {
@@ -167,6 +180,7 @@ echo ""
 show_usage()
 {
 echo "-a show all information"
+echo "-m markdown for ease of use with Discourse, GitHub and the like"
 echo "-n show network information only"
 }
 
@@ -179,22 +193,28 @@ if [ -z $1 ] ; then
 fi
 
 case $1 in
-	-n)
-	show_network
-# 	show_trueos_banner
-        ;;
 	-a)
 	show_general
 	show_network
 # 	show_trueos_banner
 	;;
-        *)
+	-m)
+	opening_markdown
+	show_general
+# 	show_trueos_banner
+	closing_markdown
+	;;
+	-n)
+	show_network
+# 	show_trueos_banner
+	;;
+	*)
 	show_usage
-        ;;
+	;;
 esac
 
 # a possible future set of arguments/flags/options 
-# https://discourse.trueos.org/t/-/411/35
+# begun at https://discourse.trueos.org/t/-/411/35
 # 
 # -a all
 # -c compatibility
@@ -202,6 +222,7 @@ esac
 # -h hardware
 # -i interactive
 # -k kernel
+# -m markdown for ease of use with Discourse, GitHub and the like
 # -n networking
 # -r runlevels
 # -u updating
