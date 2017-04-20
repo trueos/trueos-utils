@@ -64,7 +64,7 @@ if [ ${xvesa} = "YES" ]; then
 fi
 
 # If the user wants to switch to run the xorg setup again
-if [ -e "/var/.runxsetup" ]; then
+if [ -e "/var/.runxsetup" ] || [ ! -e "/etc/X11/xorg.conf" ]; then
     setup_xorg
 fi
 
