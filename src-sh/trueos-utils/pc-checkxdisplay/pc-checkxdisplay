@@ -27,7 +27,7 @@ use_vbox_conf()
 #Functions to start each of the appropriate utilities
 setup_xorg() {
 	/usr/local/share/trueos/xorg-gui/bin/rundetect.sh
-	if [ -e /var/.runxsetup ] ; then
+	if [ -e "/var/.runxsetup" ] ; then
         rm -f /var/.runxsetup
       fi
 }
