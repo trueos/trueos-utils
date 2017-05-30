@@ -71,7 +71,7 @@ if [ -e "/var/.trueos-firstgui" ]; then
     setup_firstboot
 
 # If the user wants to switch to run the xorg setup again
-elif [ -e "/var/.runxsetup" ] || [ ! -e "/etc/X11/xorg.conf" ]; then
+elif [ -e "/var/.runxsetup" ] || [ ! -e "/etc/X11/xorg.conf" ] || [ -e "/tmp/.xgui//.lastdriver" ] ; then
     setup_xorg
 fi
 
