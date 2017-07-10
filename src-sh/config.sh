@@ -1,1 +1,1 @@
-pcbsd-utils/config.sh
+trueos-utils/config.sh
