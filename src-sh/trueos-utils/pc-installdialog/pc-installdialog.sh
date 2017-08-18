@@ -370,22 +370,7 @@ get_dlg_ans()
 get_sys_type()
 {
   unset SYSTYPE
-
-  # Determine if sys-type is TrueOS Core or TrueOS Desktop
-  if [ -e /usr/local/bin/startx ] ; then
-    get_dlg_ans "--radiolist \"System type\" 12 50 5 desktop \"TrueOS Desktop\" on server \"TrueOS Core / FreeBSD Server\" off"
-    SYSTYPE="$ANS"
-  else
-    SYSTYPE="server"
-  fi
-  if [ -z "$SYSTYPE" ] ; then
-     exit_err "Invalid system type"
-  fi
-
-  # If on a desktop, lets just set DHCP
-  if [ "$SYSTYPE" = "desktop" ] ; then
-     SYSNIC="AUTO-DHCP-SLAAC"
-  fi
+  SYSTYPE="server"
 }
 
 
