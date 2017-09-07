@@ -43,7 +43,7 @@ setup_xvesa() {
 	cp /usr/local/share/trueos/xorg-gui/cardDetect/XF86Config.compat /etc/X11/xorg.conf
 }
 
-echo "Checking for X display setup flags"
+#echo "Checking for X display setup flags"
 
 # Check if we are going to re-run the display setup wizard
 y=`kenv runwiz 2>/dev/null`
