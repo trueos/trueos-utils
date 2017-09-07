@@ -5,9 +5,12 @@
 # This script is fairly linear, it will walk through a series of questions
 # and when finished, generate a pc-sysinstall script
 
-# Source our functions
-. /usr/local/share/trueos/scripts/functions.sh
-
+# Source our functions when running from install media or installed system
+if [ -f "/root/functions.sh" ] ; then
+  . /root/functions.sh
+else
+  . /usr/local/share/trueos/scripts/functions.sh
+fi
 
 # Dialog menu title
 TITLE="TrueOS Install Dialog"
