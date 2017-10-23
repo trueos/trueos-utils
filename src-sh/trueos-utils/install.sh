@@ -20,7 +20,7 @@ DIR=`dirname $0`
 DIR=`realpath $DIR`
 cd ${DIR}
 
-SUBPROJ="about pc-checkxdisplay pc-firstgui pc-installdialog \
+SUBPROJ="about pc-firstgui pc-installdialog \
 	 pc-su pc-systemflag"
 
 # Add all the sub-projects
